@@ -8,7 +8,6 @@
 #include "Constants.h"
 #include "Graphics.h"
 
-
 #include "glm/gtc/matrix_transform.hpp"
 
 class BoardInput;
@@ -49,11 +48,6 @@ private:
 	typedef std::vector<Match*> Matches;
 	typedef std::list<ICommand*> CommandList;
 	typedef std::queue<ICommand*> CommandQueue;
-	//Cell* cells[Constants::ROW_LIMIT * Constants::COLUMN_LIMIT];
-	//Constants::Direction r = Constants::Direction::LEFT;
-
-	//Cell* GetCellAt(const int index);
-	//Cell* GetSpawnerAt(const int index);
 	Cell* GetCellAt(const int row, const int column);
 
 	void CreateCells(int cellCount, int spawnerCellsCount);
@@ -63,16 +57,12 @@ private:
 	void RenderBackground(Graphics* graphics);
 	void RenderCells(Graphics* graphics);
 	void RenderPieces(Graphics* graphics);
-	//void ApplyModelTransformation(GameEntity* gameEntity);
 
 	void DoMatchDetection();
 	void DoCascade();
 	Piece* GetNeighbourPieceInDirection(Cell* recieverCell, Cell** donerCell, const Constants::Direction dir);
 	void FillableList(std::list<Cell*>& fillableList);
 
-	//template <typename T, template <typename...> class Cont>
-	//template <typename C, typename T>
-	//glm::mat4* GetModelMatrices(C& container, std::vector<T*>& gameEntities);
 	template <typename Iter>
 	void ApplyModelTransformation(Iter it, Iter end, std::vector<glm::mat4>& modelMatrices);
 
@@ -91,7 +81,7 @@ private:
 	CascadeService* m_CascadeService;
 
 	//Texture* m_BGtexture;
-	Texture* m_Celltexture;
+	//Texture* m_Celltexture;
 
 	Texture* m_BlueGemtexture;
 	Texture* m_RedGemtexture;
@@ -114,9 +104,9 @@ void Game::ApplyModelTransformation(Iter it, Iter end, std::vector<glm::mat4>& m
 	//bool isExpectedContainer = std::equal<std::vector, C>::value && std::equal<std::list, C>::value;
 	//ASSERT(isExpectedContainer);
 	int size = std::distance(it, end);
-	int i = 0;
+	//int i = 0;
 	//glm::mat4* modelMatrices2 = new glm::mat4[size];
-	
+	modelMatrices.reserve(size);
 	//float scaleD = static_cast<float>(rand() % 3);
 	for (; it != end; ++it) 
 	{ 

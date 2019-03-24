@@ -1,13 +1,13 @@
 #include "BoardInput.h"
 #include "MouseInput.h"
-#include "Application.h"
+#include "System.h"
 #include "Cell.h"
 #include <iostream>
 
 BoardInput::BoardInput(const std::list<Cell*>& cells)
 	: m_Cells(cells), m_TouchMovement(0.0f), m_CurrentTouchCell(0), m_LastTouchedCell(0), m_SwapTriggered(false), m_FirstTouch(false), m_MouseDownPos(0), m_MouseHeld(false)
 {
-	m_MouseInput = Application::GetApplication().GetMouseInput();
+	m_MouseInput = System::GetSystemInstance().GetMouseInput();
 }
 
 BoardInput::~BoardInput()
@@ -114,7 +114,7 @@ void BoardInput::Update()
 		//std::cout << "m_CurrentTouchCell! " << m_CurrentTouchCell->GetName() << std::endl;
 		if (&m_LastTouchedCell && &m_CurrentTouchCell && !m_LastTouchedCell->IsBusy() && !m_CurrentTouchCell->IsBusy()) //making sure cascading cells are not picked
 		{
-			Application::GetApplication().GetGame()->SwapPieces(m_LastTouchedCell, m_CurrentTouchCell);
+			System::GetSystemInstance().GetGame()->SwapPieces(m_LastTouchedCell, m_CurrentTouchCell);
 			//Board.Instance.DoSwapping(lastTouchedCell, currentTouchCell);
 		}
 		//Board.Instance.SelectCell(null);

@@ -3,7 +3,7 @@
 #include "Utility.h"
 #include "Cell.h"
 #include "Piece.h"
-#include "Application.h"
+#include "System.h"
 
 #include <iostream>
 
@@ -78,7 +78,7 @@ void DestroyPiecesCommand::Update(float deltaTime)
 				(*cellIt)->SetScale(glm::vec3(0));
 		
 			}
-			Application::GetApplication().GetGame()->DeletePieces(m_DestroyingPieces);
+			System::GetSystemInstance().GetGame()->DeletePieces(m_DestroyingPieces);
 			Finish();
 		}
 		else

@@ -6,12 +6,6 @@
 class Cell;
 
 
-struct PieceProperties
-{
-	MatchFactory::MatchColor matchType;
-};
-
-
 class Piece : public GameEntity
 {
 	public:

@@ -11,8 +11,9 @@ public:
 	MainWindow();
 	~MainWindow();
 	bool ShouldClose();
-	void Update() const;
-	inline GLFWwindow* GetGLFWindow() const { return m_Window; }
+	void Update();
+	void Render();
+	inline GLFWwindow* GetGLFWindow() const { return m_GlfWindow; }
 	//void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 
 	int GetMouseButtonState(int action);
@@ -21,5 +22,5 @@ private:
 	void CreateWindow(GLFWwindow* glfWindow);
 	void DestroyWindow();
 
-	GLFWwindow* m_Window;
+	GLFWwindow* m_GlfWindow;
 };

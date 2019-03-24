@@ -1,5 +1,5 @@
 #include "OrthoCamera.h"
-#include "Application.h"
+#include "System.h"
 #include <time.h>
 #include <iostream>
 #include <unordered_set>
@@ -19,6 +19,10 @@
 #include "MatchFactory.h"
 #include "CascadeService.h"
 
+#include "LoadingState.h"
+#include "GamePlayState.h"
+//#include "GameOverState.h"
+
 #include "glm/glm.hpp"
 
 Game::Game():m_Camera(0), m_BoardInput(0), m_MatchFactory(0), m_MatchChecker(0)
@@ -27,18 +31,35 @@ Game::Game():m_Camera(0), m_BoardInput(0), m_MatchFactory(0), m_MatchChecker(0)
 	srand((unsigned int)time(0));
 	m_Camera = new OrthoCamera(SCREEN_WIDTH, SCREEN_HEIGHT, -1.0f, 1.0f);
 
+	System system = System::GetSystemInstance();
+
+
+	system.GetStateMachine()->AddState(Constants::LOADING_STATE, new LoadingState());
+	system.GetStateMachine()->AddState(Constants::GAMEPLAY_STATE, new GamePlayState());
+
+
 	//TODO move to asset loader class
 	//m_BGtexture = new Texture("res/textures/BackGround.jpg");
-	m_Celltexture = new Texture("res/textures/bis.jpg");
-	m_BlueGemtexture = new Texture("res/textures/Blue.png");
-	m_RedGemtexture = new Texture("res/textures/Red.png");
-	m_YellowGemtexture = new Texture("res/textures/Yellow.png");
-	m_GreenGemtexture = new Texture("res/textures/Green.png");
-	m_PurpleGemtexture = new Texture("res/textures/Purple.png");
+	//m_Celltexture = new Texture("res/textures/bis.jpg");
+	System::GetSystemInstance().GetAssetLoader()->Load<Texture>("res/textures/Blue.png", "Blue");
+	System::GetSystemInstance().GetAssetLoader()->Load<Texture>("res/textures/Red.png", "Red");
+	System::GetSystemInstance().GetAssetLoader()->Load<Texture>("res/textures/Green.png", "Green");
+	System::GetSystemInstance().GetAssetLoader()->Load<Texture>("res/textures/Yellow.png", "Yellow");
+	System::GetSystemInstance().GetAssetLoader()->Load<Texture>("res/textures/Purple.png", "Purple");
 
-	m_MatchFactory = new MatchFactory(MatchFactory::MatchTemplateType::FULL_MATCHES_TEMPLATE);
-	m_MatchChecker = new MatchChecker(m_MatchFactory);
-	m_CascadeService = new CascadeService();
+	system.GetStateMachine()->SetState(Constants::LOADING_STATE);
+
+	//m_BlueGemtexture = new Texture("res/textures/Blue.png"); //System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Blue"); //new Texture("res/textures/Blue.png");
+	//m_RedGemtexture = new Texture("res/textures/Red.png");
+	//m_YellowGemtexture = new Texture("res/textures/Yellow.png");
+	//m_GreenGemtexture = new Texture("res/textures/Green.png");
+	//m_PurpleGemtexture = new Texture("res/textures/Purple.png");
+
+	m_MatchFactory		= new MatchFactory(MatchFactory::MatchTemplateType::FULL_MATCHES_TEMPLATE);
+	m_MatchChecker		= new MatchChecker(m_MatchFactory);
+	m_CascadeService	= new CascadeService();
+
+	
 }
 
 Game::~Game()
@@ -108,12 +129,12 @@ Game::~Game()
 
 	delete m_Camera;
 	//delete	m_BGtexture;
-	delete	m_Celltexture;
-	delete	m_BlueGemtexture;
+	//delete	m_Celltexture;
+	/*delete	m_BlueGemtexture;
 	delete	m_RedGemtexture;
 	delete	m_YellowGemtexture;
 	delete	m_GreenGemtexture;
-	delete	m_PurpleGemtexture;
+	delete	m_PurpleGemtexture;*/
 	delete	m_MatchFactory;
 	delete	m_MatchChecker;
 	delete	m_CascadeService;
@@ -137,28 +158,9 @@ void Game::Update(float deltaTime)
 		}
 		else
 		{
-			m_OverFlowCommands.push(command); // enques overflowing actions
+			m_OverFlowCommands.push(command); // enqueues overflowing actions
 		}
 	}
-
-
-	//if (!m_ActiveCommands.empty())
-	//{
-	//	for (CommandList::const_iterator commandsIt = m_ActiveCommands.begin(),
-	//		end = m_ActiveCommands.end();
-	//		commandsIt != end;
-	//		++commandsIt)
-	//	{
-	//		if ((*commandsIt)->IsActive())
-	//		{
-	//			(*commandsIt)->Update(deltaTime);       // calling upate method in a every deltatime to the active actions
-	//		}
-	//		else if ((*commandsIt)->IsComplete())
-	//		{
-
-	//		}
-	//	}
-	//}
 
 	if (!m_ActiveCommands.empty())
 	{
@@ -189,26 +191,15 @@ void Game::Update(float deltaTime)
 	if (m_CascadeService->NeedsCascading())
 	{
 		DoCascade();
-		//if(!m_CascadeService->GetEmptyCells().empty())
-		//	std::cout << "No need of cascading  " << m_CascadeService->GetEmptyCells().size() << std::endl;
 	}
 	if (m_CascadeService->NeedsMatchDetection())
 	{
-		//if (!m_CascadeService->GetEmptyCells().empty())
-			//std::cout << "Needs cascading  " << m_CascadeService->GetEmptyCells().size() << std::endl;
 		DoMatchDetection();
 	}
-	//std::cout << "yoo  " << std::endl;
 }
 
 void Game::Render(Graphics* graphics)
 {
-	/*for (Cells::const_iterator cellsIt = m_Cells.begin(),
-		end = m_Cells.end();
-		cellsIt != end;
-		++cellsIt)
-	{*/
-
 	m_Camera->SetView(*graphics);
 
 	graphics->ClearColor();
@@ -286,12 +277,10 @@ void Game::Initialise(Graphics* graphics)
 //	std::unique_ptr<ICommand> dropCommand = std::make_unique<DropPieceCommand>(piece, *cellsIt, 2.0);
 
 		m_CascadeService->SetFilled((*cellsIt));
-		//if ((*cellsIt)->GetColumn() == 7 && (*cellsIt)->GetRow() == 7)
-		{
-			ICommand* dropPieceCommand = new DropPieceCommand(piece, *cellsIt, spawnerCell, 0.1);
-			m_PendingCommands.push(dropPieceCommand);
-		}
 
+		ICommand* dropPieceCommand = new DropPieceCommand(piece, *cellsIt, spawnerCell, 0.1);
+		m_PendingCommands.push(dropPieceCommand);
+		
 		m_CascadeService->SetDirty((*cellsIt));
 
 	}
@@ -346,11 +335,6 @@ void Game::CreateCells(int cellsCount, int spawnerCellsCount)
 				cell->SetName(oss.str());
 				cell->SetTransform(pos, scale, rotAxis, rotAngle);
 			}
-			//std::unique_ptr<ICommand> dropCommand = std::make_unique<DropPieceCommand>(nullptr, cell, 2.0);
-			////cell->PrepareForCommand(dropCommand.get());
-			//m_PendingCommands.push(dropCommand.get());
-			//std::cout << "X! " << x << std::endl;
-			//std::cout << "Y! " << y << std::endl;
 		}
 		x = 0;
 	}
@@ -362,7 +346,6 @@ Piece* Game::GetRandomPiece(Cell * spawner)
 	MatchFactory::MatchColor colour = static_cast<MatchFactory::MatchColor>(rand() % count);
 	Piece* piece = new Piece(colour);
 	
-//	std::cout << m_BluePieces.size() << std::endl;
 	return piece;
 }
 
@@ -439,8 +422,12 @@ void Game::RenderPieces(Graphics* graphics)
 		-5.0f, 5.0f,  0.0f, 1.0f,	//3
 	};
 
-	//glm::mat4 modelMatrices[64];
-	//std::vector<glm::mat4> modelMatricesVector;
+	m_BlueGemtexture = System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Blue");
+	m_RedGemtexture = System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Red");
+	m_YellowGemtexture = System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Yellow");
+	m_GreenGemtexture = System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Green");
+	m_PurpleGemtexture = System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Purple");
+
 	std::vector<glm::mat4> bluePieceTransforms;
 	std::vector<glm::mat4> redPieceTransforms;
 	std::vector<glm::mat4> greenPieceTransforms;
@@ -449,7 +436,7 @@ void Game::RenderPieces(Graphics* graphics)
 
 	Game::ApplyModelTransformation(m_BluePieces.begin(), m_BluePieces.end(), bluePieceTransforms); // new glm::mat4[m_BluePieces.size()];
 
-	graphics->DrawInstancedTexture(vertices, sizeof(vertices), &bluePieceTransforms[0], m_BluePieces.size() * sizeof(glm::mat4), m_BlueGemtexture, m_BluePieces.size());
+	graphics->DrawInstancedTexture(vertices, sizeof(vertices), &bluePieceTransforms[0], m_BluePieces.size() * sizeof(glm::mat4), System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Blue"), m_BluePieces.size());
 
 	Game::ApplyModelTransformation(m_RedPieces.begin(), m_RedPieces.end(), redPieceTransforms);
 
@@ -467,17 +454,53 @@ void Game::RenderPieces(Graphics* graphics)
 
 	graphics->DrawInstancedTexture(vertices, sizeof(vertices), &purplePieceTransforms[0], m_PurplePieces.size() * sizeof(glm::mat4), m_PurpleGemtexture, m_PurplePieces.size());
 
-	bluePieceTransforms.clear();
-	redPieceTransforms.clear();
-	greenPieceTransforms.clear();
-	yellowPieceTransforms.clear();
-	purplePieceTransforms.clear();
+	//bluePieceTransforms.clear();
+	//redPieceTransforms.clear();
+	//greenPieceTransforms.clear();
+	//yellowPieceTransforms.clear();
+	//purplePieceTransforms.clear();
 
-	//delete[] bluePieces;
-	//delete[] redPieces;
-	//delete[] greenPieces;
-	//delete[] yellowPieces;
-	//delete[] purplePieces;
+	//glm::mat4 model = std::make_unique<glm::mat4>(1.0f).get;
+	////GameEntity* gameEntitiy = static_cast<GameEntity*>(*it);
+	//Piece* p;
+	//model = glm::translate(model, p->GetTransform()->position);
+
+
+	//int count = static_cast<int>(MatchFactory::MatchColor::Count);
+	//int first = static_cast<int>(MatchFactory::MatchColor::BLUE);
+	//int last = count;
+	////for (size_t i = 0; i < count; i++)
+	//for (int index = first; index < last; index++)
+	//{
+	//	std::vector<std::unique_ptr<glm::mat4>> piecesMatrices;
+	//	//Texture* pieceTexture = nullptr;
+	//	//Pieces pieces;
+	//	//int pieceColour = index;
+	//	switch (static_cast<MatchFactory::MatchColor>(index))
+	//	{
+	//	case MatchFactory::MatchColor::BLUE:
+	//		//pieceTexture = m_BlueGemtexture;
+	//		//pieces = m_BluePieces;
+	//		Game::ApplyModelTransformation(m_BluePieces.begin(), m_BluePieces.end(), piecesMatrices);
+	//		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &piecesMatrices[0], m_BluePieces.size() * sizeof(glm::mat4), m_BlueGemtexture, m_BluePieces.size());
+	//	case MatchFactory::MatchColor::GREEN:
+	//		Game::ApplyModelTransformation(m_GreenPieces.begin(), m_GreenPieces.end(), piecesMatrices);
+	//		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &piecesMatrices[0], m_GreenPieces.size() * sizeof(glm::mat4), m_GreenGemtexture, m_GreenPieces.size());
+	//	case MatchFactory::MatchColor::YELLOW:
+	//		Game::ApplyModelTransformation(m_YellowPieces.begin(), m_YellowPieces.end(), piecesMatrices);
+	//		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &piecesMatrices[0], m_YellowPieces.size() * sizeof(glm::mat4), m_YellowGemtexture, m_YellowPieces.size());
+	//	case MatchFactory::MatchColor::RED:
+	//		Game::ApplyModelTransformation(m_RedPieces.begin(), m_RedPieces.end(), piecesMatrices);
+	//		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &piecesMatrices[0], m_RedPieces.size() * sizeof(glm::mat4), m_RedGemtexture, m_RedPieces.size());
+	//	case MatchFactory::MatchColor::PURPLE:
+	//		Game::ApplyModelTransformation(m_PurplePieces.begin(), m_PurplePieces.end(), piecesMatrices);
+	//		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &piecesMatrices[0], m_PurplePieces.size() * sizeof(glm::mat4), m_PurpleGemtexture, m_PurplePieces.size());
+	//	default:
+	//		break;
+	//	}
+
+
+	//}
 }
 
 void Game::DoMatchDetection()
@@ -514,10 +537,6 @@ void Game::DoMatchDetection()
 			ICommand* destroyPiecesCommand = new DestroyPiecesCommand(matchedCells, destroyingPieces, 0.0f);
 			m_PendingCommands.push(destroyPiecesCommand);
 
-			//SetEmpty(matches[i].matchedCells);
-			//pendingActions.Enqueue(new DestroyGroupPieceAction(matches[i].matchedCells, 0.2f, OnPiecesDestroyed));
-			//GameController.Instance.uiController.ShowFloatingScore(matches[i].Score, matches[i].keyCell.transform.position);
-			//GameController.Instance.playerStats.AddScore(matches[i].Score);
 		}
 
 		for (std::vector<Match*>::const_iterator iterator = matches.begin(),
@@ -612,13 +631,6 @@ Piece* Game::GetNeighbourPieceInDirection(Cell * receiverCell, Cell** donorCell,
 
 void Game::FillableList(std::list<Cell*>& fillableList)
 {
-//	std::list<Cell*> fillableList;
-	/*std::list<Cell*>::iterator i = m_Cells.end();
-	while (i != m_Cells.begin())
-	{
-		--i;
-		fillableList.push_back(*(i));
-	}*/
 
 	for (Cells::const_reverse_iterator cellIt = m_Cells.rbegin();
 		cellIt != m_Cells.rend(); ++cellIt) 
@@ -789,20 +801,7 @@ void Game::SwapPieces(Cell * cellA, Cell * cellB)
 		//GameController.Instance.audioManager.PlaySFX(Constants.SFX.SWAP_BACK);
 	}
 }
-//
-//Cell* Game::GetCellAt(int index)
-//{
-//	if (index < 0 || index > Constants::ROW_LIMIT * Constants::COLUMN_LIMIT - 1)
-//		return nullptr;
-//	else { return m_Cells[index]; }
-//}
-//
-//Cell* Game::GetSpawnerAt(const int index)
-//{
-//	if (index < 0 || index > Constants::ROW_LIMIT - 1)
-//		return nullptr;
-//	else { return m_SpawnerCells[index]; }
-//}
+
 
 Cell * Game::GetCellAt(const int row, const int column)
 {

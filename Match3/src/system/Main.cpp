@@ -1,10 +1,10 @@
-#include "Application.h"
+#include "System.h"
 
 int main(void)
 {
-	Application* application = new Application();
-	application->Initialise();
-	application->Run();
-	application->Terminate();
+	System* system = new System();
+	system->Initialise();
+	system->Run();
+	system->Terminate();
 	return 0;
 }

@@ -3,9 +3,13 @@
 #include "Graphics.h"
 #include "VertexBufferLayout.h"
 
+#include <iostream>
 
 Graphics::Graphics():m_Projection(0), m_View(0)
 {
+	if (glewInit() != GLEW_OK)
+		std::cout << "Error!" << std::endl;
+
 	m_InstancedShader	= std::make_unique<Shader>("res/shaders/Instanced.shader");
 	m_BasicShader		= std::make_unique<Shader>("res/shaders/Basic.shader");
 	m_TextShader		= std::make_unique<Shader>("res/shaders/Text.shader");

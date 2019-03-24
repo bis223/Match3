@@ -8,7 +8,6 @@ GameEntity::GameEntity()
 
 GameEntity::~GameEntity()
 {
-	std::cout << "GAME ENtitiy destroyed" << std::endl;
 	delete m_Transform;
 	m_Transform = nullptr;
 
