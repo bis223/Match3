@@ -10,6 +10,8 @@
 DestroyPiecesCommand::DestroyPiecesCommand(const Cells& destroyingCells, const Pieces& destroyingPieces, const float duration)
 	: m_DestroyingCells(destroyingCells), m_DestroyingPieces(destroyingPieces), m_Duration(duration), m_PieceScale(Constants::CELL_SIZE)
 {
+
+	m_highestRow = -1;
 	m_Duration = 0.25f;
 	Prepare();
 }
@@ -26,6 +28,11 @@ void DestroyPiecesCommand::Prepare()
 		++cellIt)
 	{
 		(*cellIt)->PrepareForCommand(this);
+
+		if (m_highestRow < (*cellIt)->GetRow())
+		{
+			m_highestRow = (*cellIt)->GetRow();
+		}
 	}
 }
 
@@ -39,6 +46,19 @@ bool DestroyPiecesCommand::IsReady()
 		if (!(*cellIt)->IsReadyForCommand(this))
 			return false;
 	}
+
+	for (Cells::const_iterator cellIt = m_DestroyingCells.begin(),
+		end = m_DestroyingCells.end();
+		cellIt != end;
+		++cellIt)
+	{
+		if (!System::GetSystemInstance().GetGame()->IsColumnIdle((*cellIt)->GetColumn(), m_highestRow))
+		{
+
+		//	return false;
+		}
+	}
+
 	return true;
 }
 
@@ -65,10 +85,9 @@ void DestroyPiecesCommand::Update(float deltaTime)
 	if (m_IsActive)
 	{
 		m_Timer += deltaTime;
-		//m_PieceScale -= 0.05f;// 
 		glm::vec3 scale = Utility::InterPolate(glm::vec3(m_PieceScale), glm::vec3(0), m_Timer / m_Duration);
 
-		if (m_Timer >= m_Duration)// || m_PieceScale <= 0)
+		if (m_Timer >= m_Duration)
 		{
 			for (Pieces::iterator cellIt = m_DestroyingPieces.begin(),
 				end = m_DestroyingPieces.end();
@@ -88,8 +107,7 @@ void DestroyPiecesCommand::Update(float deltaTime)
 				cellIt != end;
 				++cellIt)
 			{
-				(*cellIt)->SetScale(scale);// glm::vec3(m_PieceScale));
-				//std::cout << "scale " << (*cellIt)->GetPiece()->GetTransform()->scale.x << std::endl;
+				(*cellIt)->SetScale(scale);
 			}
 		}
 	}

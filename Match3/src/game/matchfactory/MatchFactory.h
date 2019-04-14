@@ -5,17 +5,6 @@
 #include "Match3Checker.h"
 #include "Match4Checker.h"
 
-//struct MatchTemplate {};
-//struct FullMatchesTemplate : MatchTemplate
-//{
-//	Match3Checker* match3Checker;	
-//};
-//
-//struct MatchPalette
-//{
-//	MatchTemplate fullMatchTemplate;
-//};
-
 
 class MatchFactory
 {

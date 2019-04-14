@@ -13,12 +13,12 @@ AssetLoader::~AssetLoader()
 
 void AssetLoader::Update()
 {
-	m_IsLoading = !m_PendingTextures.empty();
+	m_IsLoading = !m_PendingAssets.empty();
 	if (!m_IsLoading)
 		return;
 
-	PendingAsset assetToLoad = m_PendingTextures.front();
-	m_PendingTextures.pop_front();
+	PendingAsset assetToLoad = m_PendingAssets.front();
+	m_PendingAssets.pop_front();
 	LoadAsset<Texture>(assetToLoad);
 }
 void AssetLoader::UnloadAll()
@@ -32,15 +32,3 @@ void AssetLoader::UnloadAll()
 
 	m_LoadedAssets.clear();
 }
-//
-//void* AssetLoader::GetAsset(const std::string& assetName) const
-//{
-//	AssetMap::const_iterator assetIt = m_LoadedAssets.find(assetName);
-//	if (assetIt == m_LoadedAssets.end())
-//	{
-//		//static_assert(false);
-//		return nullptr;
-//	}
-//
-//	return assetIt->second;
-//}

@@ -25,11 +25,6 @@ void Cell::Render() const
 
 bool Cell::IsNeighour(Cell* neighbour) const
 {
-	/*for (int i = 0; i < m_Neighbours.size(); i++)
-	{
-		if (m_Neighbours[i] != nullptr && m_Neighbours[i] == neighbour)
-			return true;
-	}*/
 	
 	//if (std::find(m_Neighbours.begin(), m_Neighbours.end(), neighbour) != m_Neighbours.end())
 	if(	   m_Neighbours.left == neighbour
@@ -61,13 +56,7 @@ Cell* Cell::GetNeighbour(const Constants::Direction dir)
 
 void Cell::SetNeighbours(Cell* left, Cell* right, Cell* up, Cell* down)
 {
-	//delete m_Neighbours;
 	m_Neighbours = Neighbours{ left, right, up, down };
-	/**m_Neighbours.left	= left;
-	*m_Neighbours.right	= right;
-	*m_Neighbours.up		= up;
-	*m_Neighbours.down	= down;
-*/
 }
 
 void Cell::AttachPiece(Piece* piece)
@@ -87,13 +76,8 @@ bool Cell::CompareCells(Cell* neighbourCell, std::unordered_set<Cell*>& resolved
 {
 	const bool isInside = resolvedMatchCells.find(neighbourCell) != resolvedMatchCells.end();
 
-	//std::cout << resolvedMatchCells.size() << std::endl;
 	bool is_true = neighbourCell && neighbourCell->HasMatchingPiece(m_Piece) && (resolvedMatchCells.empty() || !isInside && neighbourCell->IsMatchable());
-	if (is_true)
-	{
-	//	std::cout << " will be added to resolved" << neighbourCell << std::endl;
-	//	std::cout << " I am" << this << std::endl;
-	}
+
 	return is_true;
 }
 

@@ -12,6 +12,7 @@
 #include "GameEntity.h"
 #include "ICommand.h"
 #include "DropPieceCommand.h"
+#include "SpawnPieceCommand.h"
 #include "SwapCommand.h"
 #include "DestroyPiecesCommand.h"
 #include "BoardInput.h"
@@ -41,6 +42,7 @@ Game::Game():m_Camera(0), m_BoardInput(0), m_MatchFactory(0), m_MatchChecker(0)
 	//TODO move to asset loader class
 	//m_BGtexture = new Texture("res/textures/BackGround.jpg");
 	//m_Celltexture = new Texture("res/textures/bis.jpg");
+
 	System::GetSystemInstance().GetAssetLoader()->Load<Texture>("res/textures/Blue.png", "Blue");
 	System::GetSystemInstance().GetAssetLoader()->Load<Texture>("res/textures/Red.png", "Red");
 	System::GetSystemInstance().GetAssetLoader()->Load<Texture>("res/textures/Green.png", "Green");
@@ -49,11 +51,6 @@ Game::Game():m_Camera(0), m_BoardInput(0), m_MatchFactory(0), m_MatchChecker(0)
 
 	system.GetStateMachine()->SetState(Constants::LOADING_STATE);
 
-	//m_BlueGemtexture = new Texture("res/textures/Blue.png"); //System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Blue"); //new Texture("res/textures/Blue.png");
-	//m_RedGemtexture = new Texture("res/textures/Red.png");
-	//m_YellowGemtexture = new Texture("res/textures/Yellow.png");
-	//m_GreenGemtexture = new Texture("res/textures/Green.png");
-	//m_PurpleGemtexture = new Texture("res/textures/Purple.png");
 
 	m_MatchFactory		= new MatchFactory(MatchFactory::MatchTemplateType::FULL_MATCHES_TEMPLATE);
 	m_MatchChecker		= new MatchChecker(m_MatchFactory);
@@ -130,11 +127,6 @@ Game::~Game()
 	delete m_Camera;
 	//delete	m_BGtexture;
 	//delete	m_Celltexture;
-	/*delete	m_BlueGemtexture;
-	delete	m_RedGemtexture;
-	delete	m_YellowGemtexture;
-	delete	m_GreenGemtexture;
-	delete	m_PurpleGemtexture;*/
 	delete	m_MatchFactory;
 	delete	m_MatchChecker;
 	delete	m_CascadeService;
@@ -239,7 +231,6 @@ void Game::Initialise(Graphics* graphics)
 
 		std::unordered_set<Cell*> newCell = std::unordered_set<Cell*>{ (*cellsIt) };
 		std::unordered_set<Cell*> resolvedCells;
-		std::cout << "colour id " << static_cast<int>(piece->GetMatchColour()) << std::endl;
 		std::vector<Match*> matches = m_MatchChecker->GetMatches(newCell, resolvedCells);
 		while (!matches.empty())
 		{
@@ -259,7 +250,6 @@ void Game::Initialise(Graphics* graphics)
 			piece = GetRandomPiece(spawnerCell);
 			(*cellsIt)->AttachPiece(piece);
 			matches = m_MatchChecker->GetMatches(newCell, resolvedCells);
-			std::cout << " new colour id " << static_cast<int>(piece->GetMatchColour()) << std::endl;
 		}
 
 		for (std::vector<Match*>::const_iterator iterator = matches.begin(),
@@ -278,8 +268,8 @@ void Game::Initialise(Graphics* graphics)
 
 		m_CascadeService->SetFilled((*cellsIt));
 
-		ICommand* dropPieceCommand = new DropPieceCommand(piece, *cellsIt, spawnerCell, 0.1);
-		m_PendingCommands.push(dropPieceCommand);
+		ICommand* spawnPieceCommand = new SpawnPieceCommand(piece, *cellsIt, spawnerCell, 0.1f);
+		m_PendingCommands.push(spawnPieceCommand);
 		
 		m_CascadeService->SetDirty((*cellsIt));
 
@@ -291,8 +281,6 @@ void Game::Initialise(Graphics* graphics)
 
 void Game::CreateCells(int cellsCount, int spawnerCellsCount)
 {
-	//m_Cells.reserve(cellsCount);
-	//m_SpawnerCells.reserve(spawnerCellsCount);
 
 	float xOffset = 60.0f;
 	float yOffset = -60.0f;
@@ -318,7 +306,7 @@ void Game::CreateCells(int cellsCount, int spawnerCellsCount)
 			std::ostringstream oss;
 			if (row == -1)
 			{
-				pos.y += 50.0f;
+				//pos.y += 30.0f;
 				cell = new Cell(row, column, true);
 				oss << "Spawner " << row << "," << column;
 				m_SpawnerCells.push_back(cell);
@@ -436,23 +424,28 @@ void Game::RenderPieces(Graphics* graphics)
 
 	Game::ApplyModelTransformation(m_BluePieces.begin(), m_BluePieces.end(), bluePieceTransforms); // new glm::mat4[m_BluePieces.size()];
 
-	graphics->DrawInstancedTexture(vertices, sizeof(vertices), &bluePieceTransforms[0], m_BluePieces.size() * sizeof(glm::mat4), System::GetSystemInstance().GetAssetLoader()->GetAsset<Texture>("Blue"), m_BluePieces.size());
+	if(!bluePieceTransforms.empty())
+		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &bluePieceTransforms[0], bluePieceTransforms.size() * sizeof(glm::mat4), m_BlueGemtexture, bluePieceTransforms.size());
 
 	Game::ApplyModelTransformation(m_RedPieces.begin(), m_RedPieces.end(), redPieceTransforms);
 
-	graphics->DrawInstancedTexture(vertices, sizeof(vertices), &redPieceTransforms[0], m_RedPieces.size() * sizeof(glm::mat4), m_RedGemtexture, m_RedPieces.size());
+	if (!redPieceTransforms.empty())
+		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &redPieceTransforms[0], redPieceTransforms.size() * sizeof(glm::mat4), m_RedGemtexture, redPieceTransforms.size());
 
 	Game::ApplyModelTransformation(m_GreenPieces.begin(), m_GreenPieces.end(), greenPieceTransforms);
 
-	graphics->DrawInstancedTexture(vertices, sizeof(vertices), &greenPieceTransforms[0], m_GreenPieces.size() * sizeof(glm::mat4), m_GreenGemtexture, m_GreenPieces.size());
+	if (!greenPieceTransforms.empty())
+		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &greenPieceTransforms[0], greenPieceTransforms.size() * sizeof(glm::mat4), m_GreenGemtexture, greenPieceTransforms.size());
 
 	Game::ApplyModelTransformation(m_YellowPieces.begin(), m_YellowPieces.end(), yellowPieceTransforms);
 
-	graphics->DrawInstancedTexture(vertices, sizeof(vertices), &yellowPieceTransforms[0], m_YellowPieces.size() * sizeof(glm::mat4), m_YellowGemtexture, m_YellowPieces.size());
+	if (!yellowPieceTransforms.empty())
+		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &yellowPieceTransforms[0], yellowPieceTransforms.size() * sizeof(glm::mat4), m_YellowGemtexture, yellowPieceTransforms.size());
 
 	Game::ApplyModelTransformation(m_PurplePieces.begin(), m_PurplePieces.end(), purplePieceTransforms);
 
-	graphics->DrawInstancedTexture(vertices, sizeof(vertices), &purplePieceTransforms[0], m_PurplePieces.size() * sizeof(glm::mat4), m_PurpleGemtexture, m_PurplePieces.size());
+	if (!purplePieceTransforms.empty())
+		graphics->DrawInstancedTexture(vertices, sizeof(vertices), &purplePieceTransforms[0], purplePieceTransforms.size() * sizeof(glm::mat4), m_PurpleGemtexture, purplePieceTransforms.size());
 
 	//bluePieceTransforms.clear();
 	//redPieceTransforms.clear();
@@ -581,12 +574,22 @@ void Game::DoCascade()
 			receiverCell->AttachPiece(newPiece);
 			m_CascadeService->SetFilled(receiverCell);
 
-			ICommand* dropCommand = new DropPieceCommand(newPiece, receiverCell, donorCell, delay);
+			ICommand* dropCommand;
+			
+			if (donorCell->IsSpawner())
+			{
+				dropCommand = new SpawnPieceCommand(newPiece, receiverCell, donorCell, delay);				
+			}
+			else
+			{
+				dropCommand = new DropPieceCommand(newPiece, receiverCell, donorCell, delay);
+			}
+
+			
 			m_PendingCommands.push(dropCommand);
 
 			m_CascadeService->SetDirty(receiverCell);
 			cellIt = emptyCells.erase(cellIt);
-
 		}
 	}
 }
@@ -596,9 +599,7 @@ void Game::DoCascade()
 Piece* Game::GetNeighbourPieceInDirection(Cell * receiverCell, Cell** donorCell, const Constants::Direction dir)
 {
 	Piece* piece = nullptr;
-	//donorCell = recieverCell->GetNeighbour(dir);
-	
-	//Cell* don = *donorCell;
+
 	while (!piece)
 	{
 		if ((*donorCell)->IsSpawner())
@@ -606,7 +607,6 @@ Piece* Game::GetNeighbourPieceInDirection(Cell * receiverCell, Cell** donorCell,
 			Cell* spawnerCell = GetCellAt(-1, (*donorCell)->GetColumn());
 			piece = GetRandomPiece(spawnerCell);
 			InitPiece(piece, spawnerCell->GetTransform());
-			//std::cout << "new puece" << std::endl;
 		}
 		else
 		{
@@ -620,10 +620,7 @@ Piece* Game::GetNeighbourPieceInDirection(Cell * receiverCell, Cell** donorCell,
 				piece = nullptr;
 				*donorCell = (*donorCell)->GetNeighbour(dir);
 			}
-			else
-			{
-				//std::cout << "stolen puece" << std::endl;
-			}
+
 		}
 	}
 	return piece;
@@ -672,8 +669,27 @@ void Game::DeletePieces(Pieces pieces)
 
 		delete p;
 	}
-	//m_CascadeService->SetEmpty(cells);
 	pieces.clear();
+}
+
+bool Game::IsBoardIdle()
+{
+	for (const auto& cellIt : m_Cells)
+	{
+		if (cellIt->IsBusy())
+			return false;
+	}
+	return !m_CascadeService->NeedsCascading();
+}
+
+bool Game::IsColumnIdle(const int column, const int row)
+{
+	for (const auto& cellIt : m_Cells)
+	{
+		if (cellIt->GetColumn() == column && cellIt->GetRow() > row && cellIt->IsBusy())
+			return false;
+	}
+	return true;
 }
 
 
@@ -689,7 +705,6 @@ Cell* Game::FindNeighbour(const Cell& cell, Constants::Direction dir)
 		{
 			row = cell.GetRow();
 			column = cell.GetColumn() - 1;
-			//cellIndex = cell.GetRow() * Constants::COLUMN_LIMIT + (cell.GetColumn() - 1);
 		}
 		else
 		{
@@ -701,7 +716,6 @@ Cell* Game::FindNeighbour(const Cell& cell, Constants::Direction dir)
 		{
 			row = cell.GetRow();
 			column = cell.GetColumn() + 1;
-			//cellIndex = cell.GetRow() * Constants::COLUMN_LIMIT + (cell.GetColumn() + 1);
 		}
 		else
 		{
@@ -711,16 +725,13 @@ Cell* Game::FindNeighbour(const Cell& cell, Constants::Direction dir)
 	case Constants::Direction::UP:
 		if (cell.IsInTopBorder())
 		{
-			//cellIndex = cell.GetColumn();
 			row = -1;
 			column = cell.GetColumn();
-			//return GetSpawnerAt(cellIndex);
 		}
 		else
 		{
 			row = cell.GetRow() - 1;
 			column = cell.GetColumn();
-			//cellIndex = (cell.GetRow() - 1) * Constants::COLUMN_LIMIT + cell.GetColumn();
 		}
 		break;
 	case Constants::Direction::DOWN:
@@ -728,7 +739,6 @@ Cell* Game::FindNeighbour(const Cell& cell, Constants::Direction dir)
 		{
 			row = cell.GetRow() + 1;
 			column = cell.GetColumn();
-			//cellIndex = (cell.GetRow() + 1) * Constants::COLUMN_LIMIT + cell.GetColumn();
 		}
 		else
 		{
@@ -747,7 +757,6 @@ void Game::SwapPieces(Cell * cellA, Cell * cellB)
 	Piece* pieceA = cellA->GetPiece();
 	Piece* pieceB = cellB->GetPiece();
 
-	//m_Pending.Enqueue(new SwapAction(cellA, cellB, pieceA, pieceB));
 	ICommand* swapCommand = new SwapCommand(cellA, cellB);
 	m_PendingCommands.push(swapCommand);
 
@@ -770,7 +779,6 @@ void Game::SwapPieces(Cell * cellA, Cell * cellB)
 			++matchIt)
 		{
 			std::list<Cell*> matchedCells = (*matchIt)->GetMatchedCells();
-			//m_CascadeService->SetDirty(matchedCells);
 			m_CascadeService->SetEmpty(matchedCells);
 			std::list<Piece*> destroyingPieces;
 			for (const auto& cell: matchedCells) 
@@ -798,7 +806,6 @@ void Game::SwapPieces(Cell * cellA, Cell * cellB)
 		m_PendingCommands.push(swapBackCommand);
 		cellA->AttachPiece(pieceA);
 		cellB->AttachPiece(pieceB);
-		//GameController.Instance.audioManager.PlaySFX(Constants.SFX.SWAP_BACK);
 	}
 }
 

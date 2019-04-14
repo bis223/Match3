@@ -66,12 +66,7 @@ private:
 	int m_Column;
 	bool m_IsSpawner;
 	Piece* m_Piece;
-	/*Cell* m_Left;
-	Cell* m_Right;
-	Cell* m_Up;
-	Cell* m_Down;*/
 	Neighbours m_Neighbours;
-	//std::vector<Cell*> m_Neighbours;
 	std::queue<ICommand*> m_PendingCellCommands;
 	ICommand* m_CurrentCommand;
 

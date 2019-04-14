@@ -14,7 +14,6 @@ public:
 	void Update();
 	void Render();
 	inline GLFWwindow* GetGLFWindow() const { return m_GlfWindow; }
-	//void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 
 	int GetMouseButtonState(int action);
 	void GetCursorPosition(double& xPos, double& yPos);

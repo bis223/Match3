@@ -1,44 +1,40 @@
-#include "DropPieceCommand.h"
-#include "Constants.h"
-#include <GL/glew.h>
-#include <iostream>
-DropPieceCommand::DropPieceCommand(Piece* droppingPiece, Cell* droppingTo, Cell* droppingFrom, const float delay)
-	: m_DroppingPiece(droppingPiece), m_DroppingTo(droppingTo), m_DroppingFrom(droppingFrom), m_Delay(delay), m_Timer(0)
-{
-	m_Delay = 0.0f;
+#include "SpawnPieceCommand.h"
 
+SpawnPieceCommand::SpawnPieceCommand(Piece * droppingPiece, Cell * droppingTo, Cell * droppingFrom, const float delay)
+	:m_DroppingPiece(droppingPiece), m_DroppingTo(droppingTo), m_DroppingFrom(droppingFrom), m_Delay(delay), m_Timer(0)
+{
+	m_Delay = 0.075f;
 	Prepare();
-
 }
 
-DropPieceCommand::~DropPieceCommand()
+SpawnPieceCommand::~SpawnPieceCommand()
 {
 }
 
-void DropPieceCommand::Prepare()
+
+void SpawnPieceCommand::Prepare()
 {
 	m_DroppingFrom->PrepareForCommand(this);
 	m_DroppingTo->PrepareForCommand(this);
 }
 
-bool DropPieceCommand::IsReady()
+bool SpawnPieceCommand::IsReady()
 {
 	return m_DroppingTo->IsReadyForCommand(this) && m_DroppingFrom->IsReadyForCommand(this);
 }
-void DropPieceCommand::Execute()
+void SpawnPieceCommand::Execute()
 {
 	m_IsActive = true;
 	m_DroppingFrom->BeginCommand(this);
 	m_DroppingTo->BeginCommand(this);
-	m_DroppingFrom->ReleaseCommand(this);
 }
 
-bool DropPieceCommand::IsActive()
+bool SpawnPieceCommand::IsActive()
 {
 	return m_IsActive;
 }
 
-void DropPieceCommand::Update(float deltaTime)
+void SpawnPieceCommand::Update(float deltaTime)
 {
 	if (m_IsActive && m_DroppingPiece)
 	{
@@ -48,16 +44,19 @@ void DropPieceCommand::Update(float deltaTime)
 		{
 			//return;
 		}
+		if (m_DroppingFrom->GetCurrentCommand() && m_DroppingFrom->GetCurrentCommand() == this && m_DroppingPiece->GetTransform()->position.y < m_DroppingFrom->GetTransform()->position.y - 12.5) //TODO make seperate command for spawn
+		{
+			m_DroppingFrom->ReleaseCommand(this);
+		}
 
-
-		glm::vec3 distanceToOwner = m_DroppingPiece->GetOwner()->GetTransform()->position - m_DroppingPiece->GetTransform()->position;
+		glm::vec3 distanceToOwner = m_DroppingTo->GetTransform()->position - m_DroppingPiece->GetTransform()->position;
 		m_dropSpeed += Constants::DROP_GRAVITY * deltaTime;
 		float moveDistance = glm::abs(m_dropSpeed * deltaTime);
 		float distance = glm::length(distanceToOwner);
 
 		if (moveDistance > distance)    // next frame it will cross the target, so stop here
 		{
-			m_DroppingPiece->SetTransform(*m_DroppingPiece->GetOwner()->GetTransform());
+			m_DroppingPiece->SetTransform(*m_DroppingTo->GetTransform());
 			m_dropSpeed = 0;
 			Finish();
 		}
@@ -74,12 +73,12 @@ void DropPieceCommand::Update(float deltaTime)
 }
 
 
-bool DropPieceCommand::IsComplete()
+bool SpawnPieceCommand::IsComplete()
 {
 	return m_IsComplete;
 }
 
-void DropPieceCommand::Finish()
+void SpawnPieceCommand::Finish()
 {
 	m_IsActive = false;
 	m_IsComplete = true;

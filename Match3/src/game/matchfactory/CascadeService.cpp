@@ -48,14 +48,6 @@ bool CascadeService::NeedsMatchDetection()
 			if (cellIt->IsBusy())
 				return false;
 		}
-		//for (Cells::const_iterator cellIt = m_DirtyCells.begin(),
-		//	end = m_DirtyCells.end();
-		//	cellIt != end;
-		//	++cellIt)
-		//{
-		//	if ((*cellIt)->IsBusy())
-		//		return false;
-		//}
 		return true;
 	}
 	return false;
@@ -70,14 +62,6 @@ bool CascadeService::NeedsCascading()
 			if (cellIt->IsBusy())
 				return false;
 		}
-		/*for (Cells::iterator cellIt = m_EmptyCells.begin(),
-			end = m_DirtyCells.end();
-			cellIt != end;
-			++cellIt)
-		{
-			if ((*cellIt)->IsBusy())
-				return false;
-		}*/
 		return true;
 	}
 	return false;

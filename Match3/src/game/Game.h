@@ -42,7 +42,8 @@ public:
 	typedef std::list<Cell*> Cells;
 	typedef std::list<Piece*> Pieces;
 	void DeletePieces(Pieces pieces);
-
+	bool IsBoardIdle();
+	bool IsColumnIdle(const int column, const int row);
 private:
 	//typedef std::vector<GameEntity*> GameEntities;
 	typedef std::vector<Match*> Matches;
@@ -104,12 +105,14 @@ void Game::ApplyModelTransformation(Iter it, Iter end, std::vector<glm::mat4>& m
 	//bool isExpectedContainer = std::equal<std::vector, C>::value && std::equal<std::list, C>::value;
 	//ASSERT(isExpectedContainer);
 	int size = std::distance(it, end);
-	//int i = 0;
-	//glm::mat4* modelMatrices2 = new glm::mat4[size];
-	modelMatrices.reserve(size);
-	//float scaleD = static_cast<float>(rand() % 3);
+	//modelMatrices.reserve(size);
 	for (; it != end; ++it) 
 	{ 
+		if ((*it)->GetTransform()->position.y > 580)
+		{
+			continue;
+		}
+
 		glm::mat4 model = glm::mat4(1.0f);
 		//GameEntity* gameEntitiy = static_cast<GameEntity*>(*it);
 
@@ -117,29 +120,10 @@ void Game::ApplyModelTransformation(Iter it, Iter end, std::vector<glm::mat4>& m
 
 		model = glm::scale(model, (*it)->GetTransform()->scale);
 
-		//if(i == 2)
-		///	model = glm::scale(model, glm::vec3(1.0f));
-		//else
-			//model = glm::scale(model, glm::vec3(5.0f));
 
 		model = glm::rotate(model, (*it)->GetTransform()->rotationAngle, (*it)->GetTransform()->rotationAxis);
 
-		//modelMatrices2[i] = model;
 		modelMatrices.push_back(model);
-	//	i++;
 	}
-	/*for (unsigned int i = 0; i < gameEntities.size(); i++)
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		GameEntity* gameEntitiy = static_cast<GameEntity*>(gameEntities[i]);
-
-		model = glm::translate(model, gameEntitiy->GetTransform()->position);
-
-		model = glm::scale(model, gameEntitiy->GetTransform()->scale);
-
-		model = glm::rotate(model, gameEntitiy->GetTransform()->rotationAngle, gameEntitiy->GetTransform()->rotationAxis);
-
-		modelMatrices[i] = model;
-	}*/
-//	return &modelMatrices2[0];
+	
 }

@@ -68,7 +68,6 @@ void System::Terminate()
 
 void System::Update(float deltaTime)
 {
-	//m_AssetLoader->Update();
 	IState* currentState = m_StateMachine->GetCurrentState();
 	currentState->Update(deltaTime);
 	/*if (&m_StateMachine->GetCurrentState() == m_StateMachine->GetState(Constants::GAMEPLAY_STATE))

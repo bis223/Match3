@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;src/game;src/game/matchfactory;src/game/commands;src/system;src/graphics;src/vendor;$(SolutionDir)Dependencies\freetype-2.9.1\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glew-2.1.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/system;src/system/states;src/vendor;src/graphics;src/game;src/game/matchfactory;src/game/commands;$(SolutionDir)Dependencies\freetype-2.9.1\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glew-2.1.0\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -100,7 +100,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;src/game;src/game/matchfactory;src/game/commands;src/system;src/graphics;src/vendor;$(SolutionDir)Dependencies\freetype-2.9.1\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glew-2.1.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/system;src/system/states;src/vendor;src/graphics;src/game;src/game/matchfactory;src/game/commands;$(SolutionDir)Dependencies\freetype-2.9.1\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glew-2.1.0\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -129,6 +129,7 @@
     <ClCompile Include="src\game\Cell.cpp" />
     <ClCompile Include="src\game\commands\DestroyPiecesCommand.cpp" />
     <ClCompile Include="src\game\commands\DropPieceCommand.cpp" />
+    <ClCompile Include="src\game\commands\SpawnPieceCommand.cpp" />
     <ClCompile Include="src\game\commands\SwapCommand.cpp" />
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\GameEntity.cpp" />
@@ -141,7 +142,12 @@
     <ClCompile Include="src\game\Piece.cpp" />
     <ClCompile Include="src\graphics\Graphics.cpp" />
     <ClCompile Include="src\graphics\OrthoCamera.cpp" />
-    <ClCompile Include="src\system\Application.cpp" />
+    <ClCompile Include="src\system\AssetLoader.cpp" />
+    <ClCompile Include="src\system\states\BootState.cpp" />
+    <ClCompile Include="src\system\states\GamePlayState.cpp" />
+    <ClCompile Include="src\system\states\LoadingState.cpp" />
+    <ClCompile Include="src\system\states\StateMachine.cpp" />
+    <ClCompile Include="src\system\System.cpp" />
     <ClCompile Include="src\graphics\IndexBuffer.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
     <ClCompile Include="src\graphics\Shader.cpp" />
@@ -149,9 +155,6 @@
     <ClCompile Include="src\system\MainWindow.cpp" />
     <ClCompile Include="src\system\MouseInput.cpp" />
     <ClCompile Include="src\system\Utility.cpp" />
-    <ClCompile Include="src\tests\Test.cpp" />
-    <ClCompile Include="src\tests\TestClearColor.cpp" />
-    <ClCompile Include="src\tests\TestTexture2D.cpp" />
     <ClCompile Include="src\graphics\Texture.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -170,6 +173,7 @@
     <ClInclude Include="src\game\commands\DestroyPiecesCommand.h" />
     <ClInclude Include="src\game\commands\DropPieceCommand.h" />
     <ClInclude Include="src\game\commands\ICommand.h" />
+    <ClInclude Include="src\game\commands\SpawnPieceCommand.h" />
     <ClInclude Include="src\game\commands\SwapCommand.h" />
     <ClInclude Include="src\game\Constants.h" />
     <ClInclude Include="src\game\Game.h" />
@@ -187,13 +191,16 @@
     <ClInclude Include="src\graphics\OrthoCamera.h" />
     <ClInclude Include="src\graphics\Renderer.h" />
     <ClInclude Include="src\graphics\Shader.h" />
-    <ClInclude Include="src\system\Application.h" />
+    <ClInclude Include="src\system\AssetLoader.h" />
+    <ClInclude Include="src\system\states\BootState.h" />
+    <ClInclude Include="src\system\states\GamePlayState.h" />
+    <ClInclude Include="src\system\states\IState.h" />
+    <ClInclude Include="src\system\states\LoadingState.h" />
+    <ClInclude Include="src\system\states\StateMachine.h" />
+    <ClInclude Include="src\system\System.h" />
     <ClInclude Include="src\system\MainWindow.h" />
     <ClInclude Include="src\system\MouseInput.h" />
     <ClInclude Include="src\system\Utility.h" />
-    <ClInclude Include="src\tests\Test.h" />
-    <ClInclude Include="src\tests\TestClearColor.h" />
-    <ClInclude Include="src\tests\TestTexture2D.h" />
     <ClInclude Include="src\graphics\Texture.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />

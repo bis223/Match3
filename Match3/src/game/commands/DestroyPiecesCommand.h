@@ -28,4 +28,5 @@ private:
 	float m_Duration;
 	float m_Timer;
 	float m_PieceScale;
+	int m_highestRow;
 };

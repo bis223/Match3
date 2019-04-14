@@ -36,34 +36,25 @@ public:
 	template <typename T>
 	void Load(const std::string& assetPath, const std::string& assetName)
 	{
-		static_assert(false);  // un-implemented type
-	}
-
-	template<>
-	void Load<Texture>(const std::string& assetPath, const std::string& assetName)
-	{
+		//static_assert(false);  // un-implemented type
 		PendingAsset pendingAsset;
 		pendingAsset.assetPath = assetPath;
 		pendingAsset.assetName = assetName;
 
-		m_PendingTextures.push_back(pendingAsset);
+		m_PendingAssets.push_back(pendingAsset);
 	}
 
 
 	template <typename T>
 	void LoadAsset(const PendingAsset& pendingAsset)
 	{
-		static_assert(false); // un-implemented type
-	}
+		//static_assert(false); // un-implemented type
 
-	template<>
-	void LoadAsset<Texture>(const PendingAsset& pendingAsset)
-	{
-		Texture* tex = new Texture(pendingAsset.assetPath);
+		T* assetData = new T(pendingAsset.assetPath);
 
 		Asset asset;
 		asset.assetName = pendingAsset.assetName;
-		asset.data = tex;
+		asset.data = assetData;
 
 		m_LoadedAssets.insert(std::make_pair(pendingAsset.assetName, asset));
 	}
@@ -71,12 +62,8 @@ public:
 	template <typename T>
 	T* GetAsset(const std::string& assetName) const
 	{
-		static_assert(false);  // un-implemented type
-	}
+		//static_assert(false);  // un-implemented type
 
-	template <>
-	Texture* GetAsset<Texture>(const std::string& assetName) const
-	{
 		AssetMap::const_iterator assetIt = m_LoadedAssets.find(assetName);
 		if (assetIt == m_LoadedAssets.end())
 		{
@@ -85,10 +72,10 @@ public:
 		}
 
 		void* data = const_cast<void*>(assetIt->second.data);
-		Texture* tex = reinterpret_cast<Texture*>(data);
+		T* assetData = reinterpret_cast<T*>(data);
 
-		if(tex)
-			return tex;
+		if (assetData)
+			return assetData;
 
 		return nullptr;
 	}
@@ -96,7 +83,7 @@ public:
 
 private:
 
-	PendingAssetList m_PendingTextures;
+	PendingAssetList m_PendingAssets;
 	AssetMap  m_LoadedAssets;
 	bool m_IsLoading;
 };

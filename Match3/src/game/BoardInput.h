@@ -21,7 +21,6 @@ private:
 
 	std::list<Cell*>	m_Cells;
 	float				m_TouchMovement;
-	//glm::vec2			m_CurrentTouchPos;
 	Cell*				m_CurrentTouchCell;
 	Cell*				m_LastTouchedCell;
 	bool				m_SwapTriggered;
@@ -29,5 +28,4 @@ private:
 	bool				m_MouseHeld;
 	glm::vec2			m_MouseDownPos;
 	MouseInput* m_MouseInput;
-	//float				m_SwapDist;
 };

@@ -82,9 +82,6 @@ void Graphics::DrawInstancedTexture(const void* staticData, unsigned int staticD
 
 	IndexBuffer indexBuffer = IndexBuffer(indices, 6);
 
-	//Texture texture = Texture("res/textures/bis.jpg");
-
-
 
 	Renderer renderer;
 	texture->Bind(); // slot 0 by default

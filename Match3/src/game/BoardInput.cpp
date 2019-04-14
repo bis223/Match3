@@ -2,6 +2,8 @@
 #include "MouseInput.h"
 #include "System.h"
 #include "Cell.h"
+#include "Cell.h"
+
 #include <iostream>
 
 BoardInput::BoardInput(const std::list<Cell*>& cells)
@@ -16,8 +18,12 @@ BoardInput::~BoardInput()
 
 void BoardInput::Update()
 {
+	
+	if (!System::GetSystemInstance().GetGame()->IsBoardIdle())
+	{
+		return;
+	}
 
-	//MouseInput* m_MouseInput = Application::GetApplication().GetMouseInput();
 
 	double x, y;
 	m_MouseInput->GetMousePosition(x, y);
@@ -32,7 +38,6 @@ void BoardInput::Update()
 		if (!touchedCell)
 		{
 			return;
-			//m_FirstTouch = true;                  // first cell clicked
 		}
 
 		if (m_CurrentTouchCell && (m_CurrentTouchCell != touchedCell))
@@ -40,40 +45,28 @@ void BoardInput::Update()
 			m_FirstTouch = false;
 			if (m_CurrentTouchCell->IsNeighour(touchedCell))
 			{
-
-				//Cell* m_LastTouchedCell;
 				m_LastTouchedCell = m_CurrentTouchCell;     // Second cell clicked
 				m_CurrentTouchCell = touchedCell;
 				m_SwapTriggered = true;
-				//Board.Instance.SelectCell(null);
-				//std::cout << "sECOND tUCH! " << touchedCell->GetRow() << " " << touchedCell->GetColumn() << std::endl;
 			}
 			else
 			{
 				m_FirstTouch = false;
 				m_CurrentTouchCell = touchedCell;
-			///	std::cout << "FIRST tUCH! " << touchedCell->GetRow() << " " << touchedCell->GetColumn() << std::endl;
-				//Board.Instance.SelectCell(touchedCell);
 			}
 		}
 		else
 		{
 			m_FirstTouch = true;
 			m_CurrentTouchCell = touchedCell;
-			//std::cout << "FIRST tUCH! " << touchedCell->GetRow() << " " << touchedCell->GetColumn() << std::endl;
-			//Board.Instance.SelectCell(currentTouchCell);
 		}
-		//if(m_LastTouchedCell)
-		//	std::cout << "m_LastTouchedCell! " << m_LastTouchedCell->GetRow() << " " << m_LastTouchedCell->GetColumn() << std::endl;
-		//if (m_CurrentTouchCell)
-		//	std::cout << "m_CurrentTouchCell! " << m_CurrentTouchCell->GetRow() << m_CurrentTouchCell->GetColumn() << std::endl;
 		
 	}
 	if (m_MouseInput->GetMouseButtonUp(GLFW_MOUSE_BUTTON_LEFT))
 	{
 		m_MouseHeld = false;
 	}
-	//std::cout << "m_MouseHeld! " << m_MouseHeld << std::endl;
+
 	if (!m_MouseHeld)
 	{
 		return;
@@ -82,14 +75,11 @@ void BoardInput::Update()
 	if (!m_SwapTriggered && m_FirstTouch && m_CurrentTouchCell)
 	{
 		m_TouchMovement = glm::abs(glm::length(m_MouseDownPos - mousePosition));
-		//std::cout << "m_TouchMovement " << m_TouchMovement << std::endl;
 		if (m_TouchMovement >= Constants::SWAP_THRESHOLD)
 		{
 			m_LastTouchedCell = m_CurrentTouchCell;
 			Cell* neighbourCell = nullptr;
 			neighbourCell = NeighbourAtDirection(m_MouseDownPos, mousePosition);
-			//m_CurrentTouchCell = CellAtDirection(m_MouseDownPos, mousePosition);  //Swipped towards second cell
-			//Board.Instance.SelectCell(null);
 			if (neighbourCell)
 			{
 				m_CurrentTouchCell = neighbourCell;
@@ -101,30 +91,21 @@ void BoardInput::Update()
 				m_CurrentTouchCell = m_LastTouchedCell;
 				m_TouchMovement = 0.0f;
 			}
-			//std::cout << "sECOND tUCH! " << m_CurrentTouchCell->GetRow() << " " << m_CurrentTouchCell->GetColumn() << std::endl;
-			//blockInput = true;
-			//std::cout << "m_LastTouchedCell! " << m_LastTouchedCell->GetRow() << m_LastTouchedCell->GetColumn() << std::endl;
-			//std::cout << "m_CurrentTouchCell! " << m_CurrentTouchCell->GetRow() << m_CurrentTouchCell->GetColumn() << std::endl;
 		}
 	}
 
 	if (m_SwapTriggered)
 	{
-		//std::cout << "m_LastTouchedCell! " << m_LastTouchedCell->GetName() << std::endl;
-		//std::cout << "m_CurrentTouchCell! " << m_CurrentTouchCell->GetName() << std::endl;
 		if (&m_LastTouchedCell && &m_CurrentTouchCell && !m_LastTouchedCell->IsBusy() && !m_CurrentTouchCell->IsBusy()) //making sure cascading cells are not picked
 		{
 			System::GetSystemInstance().GetGame()->SwapPieces(m_LastTouchedCell, m_CurrentTouchCell);
-			//Board.Instance.DoSwapping(lastTouchedCell, currentTouchCell);
 		}
-		//Board.Instance.SelectCell(null);
 		m_CurrentTouchCell = nullptr;
 		m_LastTouchedCell = nullptr;
 
 		m_MouseDownPos = glm::vec2(0);
 		m_TouchMovement = 0.0f;
 		m_SwapTriggered = false;
-		//blockInput = false;
 	}
 
 }
