@@ -6,7 +6,7 @@ Highlights:
 * Modern C++
 * C++ templates
 * C++ smart pointers
-* OPEGL rendering
+* OpenGL rendering
 * GPU instancing
 * Usage of command pattern in C++
 * State Machine
