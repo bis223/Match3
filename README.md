@@ -3,7 +3,7 @@ Work in progress
 
 Highlights:
 
-* Modern C++
+* Modern C++ (Visual Studio Community 2017)
 * C++ templates
 * C++ smart pointers
 * OpenGL rendering
