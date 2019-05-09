@@ -10,7 +10,6 @@ Match3Checker::Match3Checker(int baseScore, int scorePerPiece): m_BaseScore(base
 
 Match* Match3Checker::Check(Cell* cell, std::unordered_set<Cell*>& resolvedCells)
 {
-	Match* match = nullptr;
 
 	bool leftMatch = cell->CompareCells(cell->GetLeft(), resolvedCells);
 	bool rightMatch = cell->CompareCells(cell->GetRight(), resolvedCells);
@@ -73,7 +72,7 @@ Match* Match3Checker::Check(Cell* cell, std::unordered_set<Cell*>& resolvedCells
 	}
 
 
-	return match;
+	return nullptr;
 }
 
 int Match3Checker::GetScore(int totalPiecesDestroyed)

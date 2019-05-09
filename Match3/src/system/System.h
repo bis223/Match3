@@ -24,12 +24,12 @@ public:
 
 	inline static System& GetSystemInstance() { return *s_Instance; }
 
-	inline StateMachine* GetStateMachine() const { return m_StateMachine; }
-	inline MainWindow* GetMainWindow() const { return m_MainWindow; }
-	inline Graphics* GetGraphics() const { return m_Graphics; }
-	inline AssetLoader* GetAssetLoader() const { return m_AssetLoader; }
-	inline MouseInput* GetMouseInput() const { return m_MouseInput; }
-	inline Game* GetGame() const { return m_Game; }
+	inline StateMachine* GetStateMachine()	const { return m_StateMachine; }
+	inline MainWindow* GetMainWindow()		const { return m_MainWindow; }
+	inline Graphics* GetGraphics()			const { return m_Graphics; }
+	inline AssetLoader* GetAssetLoader()	const { return m_AssetLoader; }
+	inline MouseInput* GetMouseInput()		const { return m_MouseInput; }
+	inline Game* GetGame()					const { return m_Game; }
 
 
 

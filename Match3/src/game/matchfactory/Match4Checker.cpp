@@ -9,8 +9,6 @@ Match4Checker::Match4Checker(int baseScore, int scorePerPiece) : m_BaseScore(bas
 
 Match* Match4Checker::Check(Cell* cell, std::unordered_set<Cell*>& resolvedCells)
 {
-	Match* match = nullptr;
-
 	std::list<Cell*> matchedCells;
 	Cell* pivot = cell;
 	matchedCells.push_back(pivot);
@@ -57,7 +55,7 @@ Match* Match4Checker::Check(Cell* cell, std::unordered_set<Cell*>& resolvedCells
 		return new Match(Match::MATCH4, matchedCells, cell, GetScore(matchedCells.size()));
 	}
 
-	return match;
+	return nullptr;
 }
 
 int Match4Checker::GetScore(int totalPiecesDestroyed)

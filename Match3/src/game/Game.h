@@ -35,7 +35,7 @@ public:
 	void Update(float deltaTime);
 	void Render(Graphics* graphics);
 
-	void Initialise(Graphics* graphics);
+	void Initialise();
 	Cell* FindNeighbour(const Cell&, Constants::Direction dir);
 	void SwapPieces(Cell* cellA, Cell* cellB);
 	//void UpdateSpawnerCells();

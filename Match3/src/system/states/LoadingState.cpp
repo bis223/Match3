@@ -26,6 +26,7 @@ void LoadingState::Update(float deltaTime)
 		if (!assetLoader->IsLoading())
 		{
 			System::GetSystemInstance().GetStateMachine()->SetState(Constants::GAMEPLAY_STATE);
+			System::GetSystemInstance().GetGame()->Initialise();
 		}
 	}
 }

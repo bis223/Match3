@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -168,6 +168,8 @@
     <ClCompile Include="src\graphics\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\bis\list.h" />
+    <ClInclude Include="src\bis\vector.h" />
     <ClInclude Include="src\game\BoardInput.h" />
     <ClInclude Include="src\game\Cell.h" />
     <ClInclude Include="src\game\commands\DestroyPiecesCommand.h" />

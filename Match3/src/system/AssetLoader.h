@@ -36,7 +36,6 @@ public:
 	template <typename T>
 	void Load(const std::string& assetPath, const std::string& assetName)
 	{
-		//static_assert(false);  // un-implemented type
 		PendingAsset pendingAsset;
 		pendingAsset.assetPath = assetPath;
 		pendingAsset.assetName = assetName;
@@ -48,8 +47,6 @@ public:
 	template <typename T>
 	void LoadAsset(const PendingAsset& pendingAsset)
 	{
-		//static_assert(false); // un-implemented type
-
 		T* assetData = new T(pendingAsset.assetPath);
 
 		Asset asset;
@@ -62,12 +59,9 @@ public:
 	template <typename T>
 	T* GetAsset(const std::string& assetName) const
 	{
-		//static_assert(false);  // un-implemented type
-
 		AssetMap::const_iterator assetIt = m_LoadedAssets.find(assetName);
 		if (assetIt == m_LoadedAssets.end())
 		{
-			//static_assert(false);
 			return nullptr;
 		}
 

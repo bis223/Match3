@@ -35,7 +35,7 @@ void System::Initialise()
 
 	m_MouseInput = new MouseInput(m_MainWindow);
 	m_Game = new Game();
-	m_Game->Initialise(m_Graphics);
+	//m_Game->Initialise(m_Graphics);
 
 
 }
@@ -57,7 +57,6 @@ void System::Run()
 
 void System::Terminate()
 {
-
 	delete m_MouseInput;
 	delete m_Game;
 	delete m_Graphics;
@@ -70,10 +69,6 @@ void System::Update(float deltaTime)
 {
 	IState* currentState = m_StateMachine->GetCurrentState();
 	currentState->Update(deltaTime);
-	/*if (&m_StateMachine->GetCurrentState() == m_StateMachine->GetState(Constants::GAMEPLAY_STATE))
-	{
-		m_Game->Update(deltaTime);
-	}*/
 	m_MainWindow->Update();
 }
 
@@ -84,7 +79,6 @@ void System::Render()
 	IState* currentState = m_StateMachine->GetCurrentState();
 	currentState->Render(m_Graphics);
 	m_MainWindow->Render();
-
 
 }
 
